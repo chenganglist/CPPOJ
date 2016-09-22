@@ -1,0 +1,250 @@
+#include <iostream>
+#include <stdio.h>
+using namespace std;
+
+//1、快速排序
+//2、希尔排序
+//3、堆排序
+//4、归并排序
+//5、冒泡排序
+//6、插入排序
+
+void insertSort(int a[],int n)
+{
+	for(int i=0;i<n-1;i++)
+	{
+		for(int j=i+1;j>0;j--)
+		{
+			if(a[j]<a[j-1])
+			{
+				a[j]^=a[j-1];
+				a[j-1]^=a[j];
+				a[j]^=a[j-1];
+			}else{
+				break;
+			}
+		}
+	}
+}
+
+void shellSort(int a[],int n)
+{
+	int gap,grp,i,j;
+	//设置组距
+	for(gap=n/2;gap>0;gap/=2)
+	{
+		//分组
+		for(grp=0;grp<gap;grp++)
+		{
+			//子组的简单插入排序
+			for(i=grp;i<n-gap;i+=gap)
+			{
+				for(j=i+gap;j>grp;j-=gap)
+				{
+					if(a[j]<a[j-gap])
+					{
+						a[j]^=a[j-gap];
+						a[j-gap]^=a[j];
+						a[j]^=a[j-gap];
+					}else{
+						break;
+					}
+				}
+			}
+		}
+	}
+}
+
+void bubbleSort(int a[],int n)
+{
+     for(int i=0;i<n-1;i++)
+     {
+    	 for(int j=n-1;j>i;j--)
+    	 {
+    		 if(a[j]<a[j-1])
+    		 {
+    			 a[j]^=a[j-1];
+    			 a[j-1]^=a[j];
+    			 a[j]^=a[j-1];
+    		 }
+    	 }
+     }
+}
+
+int findMid(int a[],int start,int end)
+{
+	int value = a[start];
+	while(start<end)
+	{
+		while(start<end)
+		{
+			if(a[end]<value)
+			{
+				a[start] = a[end];
+				start++;
+				break;
+			}else{
+				end--;
+			}
+		}
+
+		while(start<end)
+		{
+			if(a[start]>value)
+			{
+				a[end] = a[start];
+				end--;
+				break;
+			}else{
+				start++;
+			}
+		}
+	}
+	a[start] = value;
+    return start;
+}
+
+void quickSort(int a[],int start,int end)
+{
+	if(start<=end)
+	{
+		int mid = findMid(a,start,end);
+		quickSort(a,start,mid-1);
+		quickSort(a,mid+1,end);
+	}
+}
+
+void merge(int a[],int start,int mid,int end)
+{
+	int tmp[end-start+1];
+	int left = start;
+	int right = mid+1;
+	int len = end-start+1;
+	int i = 0;
+	while(left<=mid || right<=end)
+	{
+		if(left<=mid && right<=end)
+		{
+			if(a[left]<a[right])
+			{
+				tmp[i] = a[left];
+				left++;
+				i++;
+			}else
+			{
+				tmp[i] = a[right];
+				right++;
+				i++;
+			}
+		}else if(left<=mid)
+		{
+			tmp[i] = a[left];
+			left++;
+			i++;
+		}else if(right<=end)
+		{
+			tmp[i] = a[right];
+			right++;
+			i++;
+		}
+	}
+
+	for(int i=0;i<len;i++)
+	{
+		a[start+i] =  tmp[i];
+	}
+}
+
+void mergeSort(int a[],int start,int end)
+{
+	if(start<end)
+	{
+		int mid = (start+end)/2;
+		mergeSort(a,start,mid);
+		mergeSort(a,mid+1,end);
+		merge(a,start,mid,end);
+	}
+}
+
+void ajustMaxHeap(int a[],int i,int n)
+{
+	int lchild = 2*i+1;
+	int rchild = 2*i+2;
+	while(lchild<n)
+	{
+		if(rchild<n)
+		{
+			if(a[lchild]>a[i] && a[lchild]>a[rchild])
+			{
+				a[lchild]^=a[i];
+				a[i]^=a[lchild];
+				a[lchild]^=a[i];
+				lchild = 2*i+1;
+				rchild = 2*i+2;
+			}else if(a[rchild]>a[i] && a[rchild]>a[lchild])
+			{
+				a[rchild]^=a[i];
+				a[i]^=a[rchild];
+				a[rchild]^=a[i];
+				lchild = 2*i+1;
+				rchild = 2*i+2;
+			}
+		}else{
+			if( a[lchild]>a[i] )
+			{
+				a[lchild]^=a[i];
+				a[i]^=a[lchild];
+				a[lchild]^=a[i];
+				lchild = 2*i+1;
+				rchild = 2*i+2;
+			}
+		}
+	}
+}
+
+void buildMaxHeap(int a[],int n)
+{
+	for(int i=n/2;i>0;i--)
+	{
+		ajustMaxHeap(a,i,n);
+	}
+}
+
+void maxHeapSort(int a[],int n)
+{
+	for(int i=n-1;i>=0;i--)
+	{
+		a[0]^=a[i];
+		a[i]^=a[0];
+		a[0]^=a[i];
+		ajustMaxHeap(a,i,n);
+	}
+}
+
+int main()
+{
+	while(!cin.eof())
+	{
+		fflush(stdin);
+		int num;
+		cin>>num;
+
+		int* a = new int[num];
+		for(int i=0;i<num;i++)
+		{
+			cin>>a[i];
+		}
+
+		mergeSort(a,0,num-1);
+		fflush(stdout);
+		for(int i=0;i<num-1;i++)
+		{
+			cout<<a[i]<<" ";
+		}
+		cout<<a[num-1]<<endl;
+
+
+		delete[] a;
+	}
+	return 0;
+}
